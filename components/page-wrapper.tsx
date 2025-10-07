@@ -21,7 +21,7 @@ interface PageWrapperProps {
 
 export function PageWrapper({ children, breadcrumbs }: PageWrapperProps) {
     return (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 h-screen">
             <header className="flex items-center justify-between border-b p-4" >
                 <div className="flex items-center gap-4 ">
                     <SidebarTrigger />
