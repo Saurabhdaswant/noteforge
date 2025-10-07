@@ -30,6 +30,7 @@ import Link from "next/link"
 import { useState } from "react"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
+import { createAuthClient } from "better-auth/react"
 
 const formSchema = z.object({
   email: z.email(),
@@ -70,6 +71,15 @@ export function LoginForm({
       setIsLoading(false);
     }
   }
+
+  const authClient = createAuthClient();
+  const signIn = async () => {
+    await authClient.signIn.social({
+      provider: "google",
+      callbackURL: "/dashboard"
+    });
+
+  };
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -121,7 +131,7 @@ export function LoginForm({
                 <Button disabled={isLoading} type="submit">
                   {isLoading ? "Logging in..." : "Login"}
                 </Button>
-                <Button variant="outline" type="button">
+                <Button onClick={signIn} variant="outline" type="button">
                   Login with Google
                 </Button>
               </div>

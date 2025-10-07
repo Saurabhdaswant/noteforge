@@ -29,6 +29,7 @@ import { signInUser, signUpUser } from "@/server/users"
 import Link from "next/link"
 import { useState } from "react"
 import { toast } from "sonner"
+import { createAuthClient } from "better-auth/react"
 
 const formSchema = z.object({
   name: z.string().min(2).max(100),
@@ -77,6 +78,15 @@ export function SignUpForm({
     } finally {
       setIsLoading(false);
     }
+  }
+
+
+  const signUp = async () => {
+    const authClient = createAuthClient();
+    await authClient.signIn.social({
+      provider: "google",
+      callbackURL: "/dashboard"
+    });
   }
 
   return (
@@ -148,7 +158,7 @@ export function SignUpForm({
                 <Button disabled={isLoading} type="submit">
                   {isLoading ? "Signing up..." : "Sign up"}
                 </Button>
-                <Button variant="outline" type="button">
+                <Button onClick={signUp} variant="outline" type="button">
                   Sign up with Google
                 </Button>
               </div>
