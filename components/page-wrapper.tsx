@@ -3,17 +3,16 @@ import {
     BreadcrumbItem,
     BreadcrumbLink,
     BreadcrumbList,
-    BreadcrumbPage,
     BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
+} from "@/components/ui/breadcrumb";
 import { SidebarTrigger } from "./ui/sidebar";
-import { Layout } from "lucide-react";
-import Logout from "./logout";
 import { ModeToggle } from "./mode-toggle";
+import { Fragment } from "react";
+import Logout from "./logout";
 
 interface PageWrapperProps {
     children: React.ReactNode;
-    breadcrumbs?: {
+    breadcrumbs: {
         label: string;
         href: string;
     }[];
@@ -21,36 +20,38 @@ interface PageWrapperProps {
 
 export function PageWrapper({ children, breadcrumbs }: PageWrapperProps) {
     return (
-        <div className="flex flex-col gap-4 h-screen">
-            <header className="flex items-center justify-between border-b p-4" >
-                <div className="flex items-center gap-4 ">
-                    <SidebarTrigger />
+        <div className="flex flex-col gap-4">
+            <header className="flex items-center p-4 border-b">
+                <div className="flex items-center justify-between w-full">
+                    <div className="flex items-center gap-4">
+                        <SidebarTrigger />
 
-                    <Breadcrumb>
-                        <BreadcrumbList>
-                            {
-                                breadcrumbs?.map((breadcrumb) => (
-                                    <BreadcrumbItem key={breadcrumb.label}>
-                                        <BreadcrumbLink href={breadcrumb.href}>
-                                            {breadcrumb.label}
-                                        </BreadcrumbLink>
-                                    </BreadcrumbItem>
+                        <Breadcrumb>
+                            <BreadcrumbList>
+                                {breadcrumbs.map((breadcrumb, index) => (
+                                    <Fragment key={breadcrumb.label}>
+                                        <BreadcrumbItem>
+                                            <BreadcrumbLink href={breadcrumb.href}>
+                                                {breadcrumb.label}
+                                            </BreadcrumbLink>
+                                        </BreadcrumbItem>
+                                        {index !== breadcrumbs.length - 1 && (
+                                            <BreadcrumbSeparator />
+                                        )}
+                                    </Fragment>
                                 ))}
-                        </BreadcrumbList>
-                    </Breadcrumb>
+                            </BreadcrumbList>
+                        </Breadcrumb>
+                    </div>
+
+                    <div className="flex items-center gap-4">
+                        <ModeToggle />
+                        <Logout />
+                    </div>
                 </div>
-
-
-                <div className="flex items-center gap-4">
-                    <ModeToggle />
-                    <Logout />
-                </div>
-
             </header>
-            <div className=" flex flex-1 flex-col gap-4 p-4  pt-0">
-                {children}
-            </div>
 
+            <div className="flex flex-1 flex-col gap-4 p-4 pt-0">{children}</div>
         </div>
-    )
+    );
 }

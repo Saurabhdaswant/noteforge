@@ -11,7 +11,19 @@ import {
     EmptyTitle,
 } from "@/components/ui/empty"
 
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog"
+import NoteForm from "./note-form"
+import CreateNote from "./create-note"
+
 export function EmptyNotes() {
+
     return (
         <Empty className=" h-full  border">
             <EmptyHeader>
@@ -25,7 +37,7 @@ export function EmptyNotes() {
                 </EmptyDescription>
             </EmptyHeader>
             <EmptyContent>
-                <Button>Create Note</Button>
+                <CreateNote />
             </EmptyContent>
 
         </Empty>

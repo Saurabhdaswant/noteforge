@@ -1,61 +1,74 @@
-"use server"
+"use server";
 
-import { db } from "@/db/drizzle"
-import { InsertNotebook, notebooks } from "@/db/schema"
-import { auth } from "@/lib/auth"
-import { eq } from "drizzle-orm"
-import { headers } from "next/headers"
+import { db } from "@/db/drizzle";
+import { InsertNotebook, notebooks } from "@/db/schema";
+import { auth } from "@/lib/auth";
+import { eq } from "drizzle-orm";
+import { headers } from "next/headers";
 
 export const createNotebook = async (values: InsertNotebook) => {
     try {
-        await db.insert(notebooks).values(values)
-        return { success: true, message: "Notebook created successfully" }
+        await db.insert(notebooks).values(values);
+        return { success: true, message: "Notebook created successfully" };
     } catch {
-        return { success: false, message: "Error creating notebook" }
+        return { success: false, message: "Failed to create notebook" };
     }
-}
+};
 
-export const getNoteBooks = async () => {
+export const getNotebooks = async () => {
     try {
         const session = await auth.api.getSession({
             headers: await headers()
-        })
+        });
 
-        const userId = session?.user?.id
+        const userId = session?.user?.id;
 
         if (!userId) {
-            return { success: false, message: "User not found" }
+            return { success: false, message: "User not found" };
         }
 
-        return await db.select().from(notebooks).where(eq(notebooks.userId, userId))
-    } catch {
-        return { success: false, message: "Error fetching notebooks" }
-    }
-}
+        const notebooksByUser = await db.query.notebooks.findMany({
+            where: eq(notebooks.userId, userId),
+            with: {
+                notes: true
+            }
+        });
 
-export const getNoteBookById = async (id: string) => {
-    try {
-        const notebook = await db.select().from(notebooks).where(eq(notebooks.id, id)).limit(1)
-        return { success: true, notebook: notebook[0] }
+        return { success: true, notebooks: notebooksByUser };
     } catch {
-        return { success: false, message: "Error fetching notebook" }
+        return { success: false, message: "Failed to get notebooks" };
     }
-}
+};
 
-export const updateNotebook = async (id: string, name: string) => {
+export const getNotebookById = async (id: string) => {
     try {
-        await db.update(notebooks).set({ name }).where(eq(notebooks.id, id))
-        return { success: true, message: "Notebook updated successfully" }
+        const notebook = await db.query.notebooks.findFirst({
+            where: eq(notebooks.id, id),
+            with: {
+                notes: true
+            }
+        });
+
+        return { success: true, notebook };
     } catch {
-        return { success: false, message: "Error updating notebook" }
+        return { success: false, message: "Failed to get notebook" };
     }
-}
+};
+
+export const updateNotebook = async (id: string, values: InsertNotebook) => {
+    try {
+        await db.update(notebooks).set(values).where(eq(notebooks.id, id));
+        return { success: true, message: "Notebook updated successfully" };
+    } catch {
+        return { success: false, message: "Failed to update notebook" };
+    }
+};
 
 export const deleteNotebook = async (id: string) => {
     try {
-        await db.delete(notebooks).where(eq(notebooks.id, id))
-        return { success: true, message: "Notebook deleted successfully" }
+        await db.delete(notebooks).where(eq(notebooks.id, id));
+        return { success: true, message: "Notebook deleted successfully" };
     } catch {
-        return { success: false, message: "Error deleting notebook" }
+        return { success: false, message: "Failed to delete notebook" };
     }
-}
+};

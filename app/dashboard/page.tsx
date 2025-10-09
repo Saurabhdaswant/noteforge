@@ -1,19 +1,23 @@
+import CreateNote from "@/components/create-note";
 import { EmptyNotes } from "@/components/empty-notes";
+import NotebookCard from "@/components/notebook-card";
 import { PageWrapper } from "@/components/page-wrapper";
-import { getNoteBooks } from "@/server/notebooks";
+import { getNotebooks } from "@/server/notebooks";
 
 export default async function Page() {
-    const notebooks: any = await getNoteBooks();
+    const notebooks = await getNotebooks();
 
     return (
         <PageWrapper breadcrumbs={[{ label: "Dashboard", href: "/dashboard" }]}>
-            <div className="h-full">
-                {
-                    notebooks && notebooks?.length === 0 && (
-                        <EmptyNotes />
-                    )
-                }
-            </div>
+            <CreateNote />
+
+
+            {notebooks.success &&
+                notebooks?.notebooks?.map((notebook) => (
+                    <NotebookCard key={notebook.id} notebook={notebook} />
+                ))}
+
+
         </PageWrapper>
     )
 }
